@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import Confetti from "react-confetti";
 import { db } from "@/lib/db";
-import type { NPC } from "@/lib/supabase";
+import type { NPC } from "@/lib/types";
 
 const generateRandomNumber = () => Math.floor(Math.random() * 10) + 1;
 const generateRandomEth = () =>
@@ -269,6 +269,7 @@ export default function NPCBreeder() {
       const [npc1, npc2] = selectedNPCs;
       const newNPC: Omit<NPC, "id" | "created_at"> = {
         name: `hybrid-${Date.now().toString().slice(-4)}`,
+        profile_image_url: `https://api.cloudnouns.com/v1/pfp?timestamp=${Date.now()}`,
         background: `A unique blend of ${npc1.name} and ${npc2.name}'s experiences...`,
         appearance: `A fascinating combination of ${npc1.name} and ${npc2.name}'s features...`,
         personality: {

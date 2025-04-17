@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { db } from "@/lib/db";
-import type { NPC } from "@/lib/supabase";
+import type { NPC } from "@/lib/types";
 import Layout from "@/components/Layout";
 import {
   ArrowRightLeft,

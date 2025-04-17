@@ -1,4 +1,4 @@
-import { NPC } from "./supabase";
+import { NPC } from "./types";
 import { mockDb } from "./mockDb";
 
 // This class provides a consistent interface for database operations

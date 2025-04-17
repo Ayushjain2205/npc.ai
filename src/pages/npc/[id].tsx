@@ -1,8 +1,7 @@
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import Layout from "@/components/Layout";
 import { db } from "@/lib/db";
-import { supabase } from "@/lib/supabase";
-import type { NPC } from "@/lib/supabase";
+import type { NPC } from "@/lib/types";
 import {
   Coins,
   ImageIcon,
@@ -293,11 +292,10 @@ export default function NPCDetail({
 export const getStaticPaths: GetStaticPaths = async () => {
   let npcs: { id: string }[] = [];
   try {
-    const { data, error } = await supabase.from("npcs").select("id");
-
+    const { data, error } = await db.getNPCs();
     if (error) throw error;
     if (data) {
-      npcs = data;
+      npcs = data.map((npc) => ({ id: npc.id }));
     }
   } catch (error) {
     console.error("Error fetching NPC IDs for getStaticPaths:", error);

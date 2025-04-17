@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import { db } from "@/lib/db";
-import type { NPC } from "@/lib/supabase";
+import type { NPC } from "@/lib/types";
 import Link from "next/link";
 
 const NPCCard = ({ npc }: { npc: NPC }) => {

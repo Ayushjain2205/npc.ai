@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Layout from "@/components/Layout";
 import Confetti from "react-confetti";
 import { db } from "@/lib/db";
-import type { NPC } from "@/lib/supabase";
+import type { NPC } from "@/lib/types";
 import { WalletInfo } from "@/types/npc";
 
 interface CustomRangeProps {

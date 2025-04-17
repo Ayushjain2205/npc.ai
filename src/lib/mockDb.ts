@@ -1,4 +1,4 @@
-import { NPC } from "./supabase";
+import { NPC } from "./types";
 
 // Sample mock data
 const mockNPCs: NPC[] = [
