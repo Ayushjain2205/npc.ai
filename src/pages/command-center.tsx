@@ -116,9 +116,6 @@ export default function CommandCenter() {
             content: "Error sending message. Please try again.",
           },
         ]);
-
-        // Try to reconnect
-        connectWebSocket();
       }
     } else {
       console.log("WebSocket not connected, attempting to reconnect...");
@@ -129,9 +126,6 @@ export default function CommandCenter() {
           content: "Connection lost. Attempting to reconnect...",
         },
       ]);
-
-      // Try to reconnect
-      connectWebSocket();
     }
   };
 

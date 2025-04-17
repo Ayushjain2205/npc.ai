@@ -247,6 +247,7 @@ const NPCCreator: React.FC = () => {
         name: npcData.basicInfo.name,
         background: npcData.basicInfo.background,
         appearance: npcData.basicInfo.appearance,
+        profile_image_url: `https://api.cloudnouns.com/v1/pfp?timestamp=${avatarKey}`,
         personality: {
           riskTolerance: npcData.personality.riskTolerance / 10,
           rationality: npcData.personality.rationality / 10,
@@ -281,8 +282,6 @@ const NPCCreator: React.FC = () => {
       const { data, error } = await db.createNPC(npcConfig);
       if (error) throw error;
 
-      setWalletAddress(data.walletAddress);
-      setTransactionHash(data.transactionHash);
       setCreationComplete(true);
       setShowConfetti(true);
 

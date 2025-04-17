@@ -11,6 +11,7 @@ export interface NPC {
   name: string;
   background: string;
   appearance: string;
+  profile_image_url: string | null;
   personality: {
     riskTolerance: number;
     rationality: number;

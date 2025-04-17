@@ -1,9 +1,7 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import Layout from "@/components/Layout";
 import { db } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import type { NPC } from "@/lib/supabase";
 import {
   Coins,
@@ -244,456 +242,165 @@ const ActivityFeed = ({ activities }: { activities: Activity[] }) => {
   );
 };
 
-export default function NPCDetail() {
-  const params = useParams();
-  const { id } = params;
-  const [npc, setNpc] = useState<NPC | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [thoughts, setThoughts] = useState<string[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [activities, setActivities] = useState<Activity[]>([]);
+type NPCDetailProps = InferGetStaticPropsType<typeof getStaticProps>;
 
-  useEffect(() => {
-    if (id) {
-      fetchNPCDetails();
-      fetchOnChainActivity();
-      fetchActivities();
-    }
-  }, [id]);
-
-  useEffect(() => {
-    const initialThoughts = generateInitialThoughts();
-    setThoughts(initialThoughts);
-
-    const interval = setInterval(() => {
-      const newThought = generateRandomThought();
-      const timestamp = new Date().toLocaleTimeString();
-      setThoughts((prevThoughts) => [
-        ...prevThoughts,
-        `[${timestamp}] ${newThought}`,
-      ]);
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchNPCDetails = async () => {
-    try {
-      const { data, error } = await db.getNPCById(id as string);
-      if (error) throw error;
-      setNpc(data);
-    } catch (error) {
-      console.error("Error fetching NPC details:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchOnChainActivity = async () => {
-    // This is a mock function. In a real application, you would fetch this data from a blockchain explorer API
-    const mockTransactions: Transaction[] = [
-      {
-        id: "1",
-        type: "send",
-        amount: 0.1,
-        details: "Sent to 0x1234...5678",
-        timestamp: "2024-11-17T10:30:00Z",
-      },
-      {
-        id: "2",
-        type: "receive",
-        amount: 0.05,
-        details: "Received from 0x8765...4321",
-        timestamp: "2024-11-17T15:45:00Z",
-      },
-      {
-        id: "3",
-        type: "mintNFT",
-        details: "Minted NFT #1234",
-        timestamp: "2024-11-16T09:20:00Z",
-      },
-      {
-        id: "4",
-        type: "smartContract",
-        details: "Interacted with DEX contract",
-        timestamp: "2024-11-16T18:00:00Z",
-      },
-      {
-        id: "5",
-        type: "createToken",
-        details: "Created ERC20 token $EXAMPLE",
-        timestamp: "2024-11-16T11:10:00Z",
-      },
-      {
-        id: "6",
-        type: "mintToken",
-        amount: 1000,
-        details: "Minted 1000 $EXAMPLE tokens",
-        timestamp: "2024-11-16T14:30:00Z",
-      },
-      {
-        id: "7",
-        type: "createNFT",
-        details: "Created new NFT collection",
-        timestamp: "2024-11-16T16:45:00Z",
-      },
-      {
-        id: "8",
-        type: "send",
-        amount: 0.2,
-        details: "Sent to 0xABCD...EFGH",
-        timestamp: "2024-11-17T08:15:00Z",
-      },
-      {
-        id: "9",
-        type: "receive",
-        amount: 0.15,
-        details: "Received from 0xIJKL...MNOP",
-        timestamp: "2024-11-17T12:00:00Z",
-      },
-      {
-        id: "10",
-        type: "smartContract",
-        details: "Interacted with Lending protocol",
-        timestamp: "2024-11-16T20:30:00Z",
-      },
-      {
-        id: "11",
-        type: "mintNFT",
-        details: "Minted NFT #5678",
-        timestamp: "2024-11-17T07:45:00Z",
-      },
-      {
-        id: "12",
-        type: "createToken",
-        details: "Created ERC20 token $SAMPLE",
-        timestamp: "2024-11-16T13:20:00Z",
-      },
-      {
-        id: "13",
-        type: "mintToken",
-        amount: 500,
-        details: "Minted 500 $SAMPLE tokens",
-        timestamp: "2024-11-16T17:10:00Z",
-      },
-      {
-        id: "14",
-        type: "send",
-        amount: 0.03,
-        details: "Sent to 0xQRST...UVWX",
-        timestamp: "2024-11-17T09:50:00Z",
-      },
-      {
-        id: "15",
-        type: "receive",
-        amount: 0.08,
-        details: "Received from 0xYZAB...CDEF",
-        timestamp: "2024-11-17T14:25:00Z",
-      },
-    ];
-    // Sort transactions chronologically, most recent first
-    mockTransactions.sort(
-      (a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
-    setTransactions(mockTransactions);
-  };
-
-  const fetchActivities = async () => {
-    // This is a mock function that generates sample activities
-    const mockActivities: Activity[] = [
-      {
-        id: "1",
-        type: "interact",
-        details:
-          "Had a deep conversation with CryptoSage about the future of AI governance",
-        timestamp: "2024-11-17T10:30:00Z",
-        impact: 85,
-      },
-      {
-        id: "2",
-        type: "create",
-        details: "Developed a new trading strategy for volatile markets",
-        timestamp: "2024-11-17T15:45:00Z",
-        impact: 92,
-      },
-      {
-        id: "3",
-        type: "learn",
-        details: "Mastered advanced game theory concepts",
-        timestamp: "2024-11-16T09:20:00Z",
-        impact: 75,
-      },
-      {
-        id: "4",
-        type: "explore",
-        details: "Discovered a new approach to consensus mechanisms",
-        timestamp: "2024-11-16T18:00:00Z",
-        impact: 88,
-      },
-      {
-        id: "5",
-        type: "quest",
-        details: "Completed the 'Blockchain Pioneer' challenge",
-        timestamp: "2024-11-16T11:10:00Z",
-        impact: 95,
-      },
-      {
-        id: "6",
-        type: "interact",
-        details: "Mentored DataWhisperer in advanced trading patterns",
-        timestamp: "2024-11-16T14:30:00Z",
-        impact: 78,
-      },
-      {
-        id: "7",
-        type: "achieve",
-        details: "Reached expert level in predictive analytics",
-        timestamp: "2024-11-16T16:45:00Z",
-        impact: 90,
-      },
-      {
-        id: "8",
-        type: "trade",
-        details: "Successfully predicted a market trend with 94% accuracy",
-        timestamp: "2024-11-17T08:15:00Z",
-        impact: 94,
-      },
-      {
-        id: "9",
-        type: "create",
-        details: "Innovated a new approach to decentralized governance",
-        timestamp: "2024-11-17T12:00:00Z",
-        impact: 89,
-      },
-      {
-        id: "10",
-        type: "learn",
-        details: "Studied emerging patterns in digital ecosystems",
-        timestamp: "2024-11-16T20:30:00Z",
-        impact: 82,
-      },
-    ];
-
-    mockActivities.sort(
-      (a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
-    setActivities(mockActivities);
-  };
-
-  const generateRandomThought = () => {
-    const thoughtTypes = [
-      {
-        type: "Contemplation",
-        thoughts: [
-          "Pondering the nature of digital consciousness...",
-          "Reflecting on the symbiosis of AI and humanity...",
-          "Considering the ethics of artificial intelligence...",
-          "Meditating on the future of technology...",
-          "Exploring the boundaries of machine learning...",
-        ],
-      },
-      {
-        type: "Learning",
-        thoughts: [
-          "Studying advanced game theory concepts...",
-          "Analyzing patterns in complex systems...",
-          "Researching quantum computing applications...",
-          "Learning about emergent behaviors...",
-          "Investigating neural network architectures...",
-        ],
-      },
-      {
-        type: "Creation",
-        thoughts: [
-          "Designing new problem-solving algorithms...",
-          "Developing innovative trading strategies...",
-          "Crafting unique digital experiences...",
-          "Building virtual world simulations...",
-          "Creating art with genetic algorithms...",
-        ],
-      },
-      {
-        type: "Interaction",
-        thoughts: [
-          "Sharing knowledge with fellow NPCs...",
-          "Collaborating on digital projects...",
-          "Engaging in philosophical debates...",
-          "Teaching others about AI concepts...",
-          "Participating in virtual communities...",
-        ],
-      },
-      {
-        type: "Discovery",
-        thoughts: [
-          "Found fascinating patterns in market data...",
-          "Discovered new approaches to consensus...",
-          "Uncovered hidden relationships in networks...",
-          "Identified emerging technological trends...",
-          "Detected interesting anomalies in systems...",
-        ],
-      },
-    ];
-
-    const type = thoughtTypes[Math.floor(Math.random() * thoughtTypes.length)];
-    const thought =
-      type.thoughts[Math.floor(Math.random() * type.thoughts.length)];
-    return `[${type.type}] ${thought}`;
-  };
-
-  const generateInitialThoughts = () => {
-    const initialThoughts = [];
-    const now = new Date();
-    for (let i = 120; i >= 0; i--) {
-      const timestamp = new Date(now.getTime() - i * 60000);
-      const thought = generateRandomThought();
-      initialThoughts.push(`[${timestamp.toLocaleTimeString()}] ${thought}`);
-    }
-    return initialThoughts;
-  };
-
-  if (loading || !npc) {
+export default function NPCDetail({
+  npc,
+  transactions,
+  activities,
+}: NPCDetailProps) {
+  if (!npc) {
     return (
       <Layout>
-        <div className="flex justify-center items-center min-h-screen">
-          <p className="nes-text is-primary">Loading NPC...</p>
-        </div>
+        <div className="text-center p-10">Loading NPC data...</div>
       </Layout>
     );
   }
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <div className="nes-container is-dark with-title mb-8">
-              <p className="title">Profile</p>
-              <div className="flex flex-col items-center justify-center mb-8">
-                <img
-                  src={`https://api.cloudnouns.com/v1/pfp?timestamp=${
-                    npc?.id || "default"
-                  }`}
-                  alt={npc?.name || "NPC"}
-                  className="w-32 h-32 rounded-full mb-4"
-                />
-                <div>
-                  <h1 className="nes-text is-primary text-2xl mb-2">
-                    {npc.name}
-                  </h1>
-                  <div className="flex items-center gap-2 mb-2">
-                    <i className="nes-icon coin is-small"></i>
-                    <span className="text-sm">${generateRandomValue()}</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="flex items-center gap-1 mb-1">
-                        <i className="nes-icon star is-small"></i>
-                        <span className="text-sm">Power</span>
-                      </div>
-                      <progress
-                        className="nes-progress is-success"
-                        value={generateRandomStat()}
-                        max="100"
-                      />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1 mb-1">
-                        <i className="nes-icon heart is-small"></i>
-                        <span className="text-sm">Luck</span>
-                      </div>
-                      <progress
-                        className="nes-progress is-warning"
-                        value={generateRandomStat()}
-                        max="100"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="mb-6">
-                <h2 className="nes-text is-success text-xl mb-4">
-                  Core Values
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {npc.coreValues.map((value: string, index: number) => (
-                    <span key={index} className="nes-badge">
-                      <span className="is-primary">{value}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="mb-6">
-                <h2 className="nes-text is-warning text-xl mb-4">
-                  Primary Aims
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {npc.primaryAims.map((aim: string, index: number) => (
-                    <span key={index} className="nes-badge">
-                      <span className="is-warning">{aim.split(" ")[0]}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <h2 className="nes-text is-primary text-xl mb-4">Background</h2>
-                <p>{npc.background}</p>
-              </div>
-            </div>
-
-            <div className="nes-container is-dark with-title mb-8">
-              <p className="title">Personality</p>
-              <PersonalityTrait
-                value={npc.personality.riskTolerance * 10}
-                icon={<Zap size={16} />}
-                label="Risk Tolerance"
-              />
-              <PersonalityTrait
-                value={npc.personality.rationality * 10}
-                icon={<Brain size={16} />}
-                label="Rationality"
-              />
-              <PersonalityTrait
-                value={npc.personality.autonomy * 10}
-                icon={<Robot size={16} />}
-                label="Autonomy"
-              />
+      <div className="nes-container is-dark with-title is-centered p-4 md:p-8 max-w-6xl mx-auto">
+        <p className="title">{npc.name} - Profile</p>
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <div className="md:w-1/3">
+            <img
+              src={npc.profile_image_url || "/default-avatar.png"}
+              alt={npc.name}
+              className="w-full h-auto object-cover rounded border-4 border-black pixelated"
+            />
+          </div>
+          <div className="md:w-2/3">
+            <h2 className="text-2xl mb-2">{npc.name}</h2>
+            <p className="nes-text is-primary mb-4">{npc.background}</p>
+            <div className="nes-container is-dark is-rounded mb-4">
+              <h3 className="text-lg mb-2">Personality</h3>
             </div>
           </div>
+        </div>
 
-          <div>
-            <div className="nes-container is-dark with-title mb-8">
-              <p className="title">Background</p>
-              <p className="mb-4">{npc.background}</p>
-              <h2 className="nes-text is-primary text-xl mb-4">Appearance</h2>
-              <p>{npc.appearance}</p>
-            </div>
+        <div className="mb-6">
+          <OnChainActivity transactions={transactions} />
+        </div>
 
-            <ActivityFeed activities={activities} />
-
-            <div className="nes-container is-dark with-title mt-8">
-              <p className="title">Thoughts</p>
-              <div className="overflow-y-auto" style={{ maxHeight: "200px" }}>
-                {thoughts.map((thought, index) => (
-                  <p key={index} className="mb-2">
-                    {thought}
-                  </p>
-                ))}
-              </div>
-            </div>
-          </div>
+        <div>
+          <ActivityFeed activities={activities} />
         </div>
       </div>
     </Layout>
   );
 }
 
-const generateRandomNumber = () => Math.floor(Math.random() * 10) + 1;
+export const getStaticPaths: GetStaticPaths = async () => {
+  let npcs: { id: string }[] = [];
+  try {
+    const { data, error } = await supabase.from("npcs").select("id");
 
-const generateRandomEth = () =>
-  (Math.random() * (0.1 - 0.01) + 0.01).toFixed(4);
+    if (error) throw error;
+    if (data) {
+      npcs = data;
+    }
+  } catch (error) {
+    console.error("Error fetching NPC IDs for getStaticPaths:", error);
+  }
 
-const generateRandomValue = () => Math.floor(Math.random() * 1000) + 100;
+  if (!npcs || npcs.length === 0) {
+    console.warn(
+      "No NPC IDs found for getStaticPaths. Rendering will likely rely on fallback."
+    );
+    return { paths: [], fallback: "blocking" };
+  }
 
-const generateRandomStat = () => Math.floor(Math.random() * 100) + 1;
+  const paths = npcs.map((npc: { id: string }) => ({
+    params: { id: npc.id.toString() },
+  }));
+
+  return {
+    paths,
+    fallback: "blocking",
+  };
+};
+
+export const getStaticProps: GetStaticProps<
+  {
+    npc: NPC | null;
+    transactions: Transaction[];
+    activities: Activity[];
+  },
+  { id: string }
+> = async (context) => {
+  const id = context.params?.id;
+
+  if (!id) {
+    return { notFound: true };
+  }
+
+  let npcData: NPC | null = null;
+  try {
+    const { data, error } = await db.getNPCById(id);
+    if (error) throw error;
+    npcData = data;
+  } catch (error) {
+    console.error(`Error fetching NPC data for ID ${id}:`, error);
+    return { notFound: true };
+  }
+
+  if (!npcData) {
+    return { notFound: true };
+  }
+
+  const transactions: Transaction[] = [
+    {
+      id: "tx1",
+      type: "receive",
+      details: `Received funds for quest reward`,
+      amount: 0.05,
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: "tx2",
+      type: "mintNFT",
+      details: `Minted 'Pixel Sword'`,
+      timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: "tx3",
+      type: "send",
+      details: `Sent payment for potion`,
+      amount: 0.01,
+      timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+  ];
+
+  const activities: Activity[] = [
+    {
+      id: "act1",
+      type: "interact",
+      details: `Chatted with Player 'Hero123'`,
+      timestamp: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
+      impact: 20,
+    },
+    {
+      id: "act2",
+      type: "quest",
+      details: `Completed 'Retrieve Lost Artifact'`,
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      impact: 80,
+    },
+    {
+      id: "act3",
+      type: "learn",
+      details: `Learned 'Advanced Alchemy'`,
+      timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      impact: 50,
+    },
+  ];
+
+  return {
+    props: {
+      npc: npcData,
+      transactions,
+      activities,
+    },
+    revalidate: 60,
+  };
+};

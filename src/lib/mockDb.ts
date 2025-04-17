@@ -6,6 +6,7 @@ const mockNPCs: NPC[] = [
     id: "1",
     created_at: new Date().toISOString(),
     name: "Aria",
+    profile_image_url: `https://api.cloudnouns.com/v1/pfp?timestamp=1`,
     background: "A skilled trader from the digital realms",
     appearance: "Holographic being with flowing data streams",
     personality: {
@@ -20,6 +21,7 @@ const mockNPCs: NPC[] = [
     id: "2",
     created_at: new Date().toISOString(),
     name: "Nexus",
+    profile_image_url: `https://api.cloudnouns.com/v1/pfp?timestamp=2`,
     background: "Cybersecurity expert and blockchain guardian",
     appearance: "Matrix-like code patterns forming a humanoid shape",
     personality: {
